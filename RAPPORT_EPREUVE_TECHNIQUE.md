@@ -58,11 +58,16 @@
 - **Objectif visuel :** Montrer que le fichier `.env` est bien masqué et non suivi par Git grâce à `.gitignore`.
 - **Emplacement rapport :** Sous la section *Partie A - 3. Structure du projet et sécurité*.
 
+![Arborescence des Micro-services et Organisation du Projet dans l'IDE](docs/screenshots/project_structure.jpg)
+
 ---
 
 ## Partie B — Conception et Architecture
 
 ### 1. Schéma d'Architecture Globale
+
+![Architecture Globale Plateforme Bancaire en Micro-services](docs/screenshots/architecture_schema.jpg)
+
 ```mermaid
 graph TD
     User([Utilisateur / Client Web / Mobile / Chatbot]) --> Gateway[Spring Cloud Gateway :8080]
@@ -94,6 +99,9 @@ graph TD
 ```
 
 ### 2. Diagramme de Classes
+
+![Modèle de Domaine et Diagramme de Classes](docs/screenshots/domain_model.jpg)
+
 ```mermaid
 classDiagram
     direction TB
@@ -141,6 +149,9 @@ classDiagram
 ## Partie C — Micro-services Fonctionnels
 
 ### 1. Account-Service (Port 8081)
+
+![Vérification REST API account-service sur le port 8081](docs/screenshots/api_accounts.jpg)
+
 - **Modèle minimal respecté :** `id` (UUID), `customerReference` (String), `status` (ACTIVE/BLOCKED), `currency` (String ISO), `balance` (double).
 - **Découpage en couches :**
   - `domain/` : Entité JPA `Account` et énumération `AccountStatus`.
@@ -151,6 +162,9 @@ classDiagram
   - `mcp/` : `AccountMcpTools` et `AccountMcpController` exposant les opérations sous forme de tools MCP.
 
 ### 2. Transaction-Service (Port 8082)
+
+![Vérification REST API transaction-service sur le port 8082](docs/screenshots/api_transactions.jpg)
+
 - **Modèle minimal respecté :** `id` (UUID), `accountId` (UUID), `amount` (BigDecimal), `currency` (String), `merchantCategory` (String), `country` (String), `createdAt` (Instant).
 - **Règles métier implémentées :**
   1. **Validation du montant :** Strictement positif et plafonné par la valeur injectée depuis le Config Server (`bank.transaction.max-amount = 1000.0`).
