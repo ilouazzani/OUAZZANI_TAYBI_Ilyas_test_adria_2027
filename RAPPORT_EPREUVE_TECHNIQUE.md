@@ -166,12 +166,19 @@ classDiagram
 ## Partie D — Micro-services Techniques
 
 1. **Spring Cloud Gateway (Port 8080) :**
-   - Point d'entrée unique acheminant dynamiquement les requêtes vers `account-service` (`/api/accounts/**`), `transaction-service` (`/api/transactions/**`) et `ai-agent-service` (`/api/ai/**`).
+   - Point d'entrée unique avec routage dynamique basé sur Eureka (`lb://account-service`, `lb://transaction-service`, `lb://ai-agent-service`).
+   - Configuration CORS globale pour autoriser les clients frontaux (Angular, React, Mobile).
+   - Endpoints surveillés via `/actuator/gateway/routes`.
+
 2. **Eureka Discovery Server (Port 8761) :**
-   - Registre dynamique permettant l'auto-découverte et le load balancing côté client sans adresses IP en dur.
+   - Registre dynamique haute disponibilité permettant l'auto-découverte et l'équilibrage de charge côté client (*Client-Side Load Balancing*).
+   - Tableau de bord web accessible sur `http://localhost:8761`.
+
 3. **Config Server (Port 8888) :**
-   - Centralisation des profils applicatifs avec la propriété clé partagée :
-     `bank.transaction.max-amount=1000`
+   - Centralisation des configurations externes partagées sans recompilation de code.
+   - Fournit la propriété clé partagée demandée dans le sujet :
+     `bank.transaction.max-amount = 1000`
+   - Vérifiable directement via l'URL : `http://localhost:8888/transaction-service/default`.
 
 ---
 
