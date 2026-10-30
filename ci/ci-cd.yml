@@ -1,0 +1,111 @@
+name: CI/CD Pipeline - Bank Microservices Platform
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  # -------------------------------------------------------------
+  # ÉTAPE 1 & 2 : COMPILATION & TESTS AUTOMATISÉS
+  # -------------------------------------------------------------
+  build-and-test:
+    name: Build & Test Microservices
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code Source
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17 LTS (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Set up Python for ML Evaluation
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: 1. Compilation du projet Maven Multi-modules
+        run: mvn clean compile -B
+
+      - name: 2. Exécution des Tests Unitaires & Intégration
+        run: mvn test -B
+
+      - name: Exécution des Tests ML Détection de Fraude
+        run: |
+          pip install -r ml-fraud-detection/requirements.txt
+          python ml-fraud-detection/fraud_detection.py
+
+  # -------------------------------------------------------------
+  # ÉTAPE 3 & 4 : CONSTRUCTION DES IMAGES DOCKER & PUBLICATION
+  # -------------------------------------------------------------
+  docker-build-and-publish:
+    name: Build & Push Docker Images
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      packages: write
+
+    strategy:
+      matrix:
+        service:
+          - discovery-service
+          - config-service
+          - gateway-service
+          - account-service
+          - transaction-service
+          - ai-agent-service
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry (GHCR)
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 3. Construction de l'Image Docker
+        run: |
+          docker build -t ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.service }}:${{ github.sha }} \
+                       -t ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.service }}:latest \
+                       -f ${{ matrix.service }}/Dockerfile .
+
+      - name: 4. Publication de l'Image dans le Registre
+        run: |
+          docker push ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.service }}:${{ github.sha }}
+          docker push ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.service }}:latest
+
+  # -------------------------------------------------------------
+  # ÉTAPE 5 : DÉPLOIEMENT CONTINU (STAGING / PROD)
+  # -------------------------------------------------------------
+  deploy:
+    name: Continuous Deployment (CD)
+    needs: docker-build-and-publish
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout Deployment Manifests
+        uses: actions/checkout@v4
+
+      - name: 5. Déploiement vers Kubernetes / Docker Swarm (Simulation)
+        run: |
+          echo "=========================================================="
+          echo "DÉPLOIEMENT CONTINU DÉCLENCHÉ AVEC SUCCÈS"
+          echo "Environnement cible : Production"
+          echo "Version déployée : ${{ github.sha }}"
+          echo "Vérification des Healthchecks Actuator & Rolling Update..."
+          echo "=========================================================="
