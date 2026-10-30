@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Rapport Épreuve Technique - ENSET / ADRIA 2027</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+    <style>
+        @media print {
+            @page { margin: 15mm; size: A4; }
+            body { font-size: 11pt; }
+            .no-print { display: none; }
+            h1, h2, h3 { page-break-after: avoid; }
+            pre, blockquote, figure { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 py-8 text-slate-800">
+    <div class="no-print max-w-4xl mx-auto mb-4 flex justify-between items-center bg-blue-700 text-white p-4 rounded-xl shadow">
+        <span>📄 Rapport technique prêt pour export PDF</span>
+        <button onclick="window.print()" class="bg-white text-blue-800 px-4 py-2 rounded-lg font-bold text-sm shadow hover:bg-blue-50">
+            🖨️ Imprimer / Enregistrer en PDF
+        </button>
+    </div>
+    <div class="max-w-4xl mx-auto bg-white p-10 rounded-xl shadow-lg border border-slate-200">
+        <h1>RAPPORT D'ÉPREUVE TECHNIQUE DE SÉLECTION</h1>
+<h2>Architecture Micro-services, IA et Développement Full-Stack</h2>
+<strong>Candidat :</strong> Ilyas OUAZZANI TAYBI  
+<strong>Contexte :</strong> ENSET Mohammedia / ADRIA Business & Technology (Session 2027)  
+<strong>Dépôt GitHub :</strong> <a href="https://github.com/ilouazzani/OUAZZANI_TAYBI_Ilyas_test_adria_2027.git" class="text-blue-600 underline">https://github.com/ilouazzani/OUAZZANI_TAYBI_Ilyas_test_adria_2027.git</a>
+<p class="mb-3 leading-relaxed text-slate-700">---</p>
+<h2>Sommaire</h2>
+1. <a href="#partie-a--préparation--structure-du-projet" class="text-blue-600 underline">Partie A — Préparation & Structure du Projet</a>
+2. <a href="#partie-b--conception-et-architecture" class="text-blue-600 underline">Partie B — Conception et Architecture</a>
+3. <a href="#partie-c--micro-services-fonctionnels" class="text-blue-600 underline">Partie C — Micro-services Fonctionnels (REST, GraphQL, MCP, Feign, Resilience4J)</a>
+4. <a href="#partie-d--micro-services-techniques" class="text-blue-600 underline">Partie D — Micro-services Techniques (Discovery, Config, Gateway)</a>
+5. <a href="#partie-e--chatbot-agentique" class="text-blue-600 underline">Partie E — Chatbot Agentique (Spring AI & Serveurs MCP)</a>
+6. <a href="#partie-f--communication-asynchrone-avec-apache-kafka" class="text-blue-600 underline">Partie F — Communication Asynchrone avec Apache Kafka</a>
+7. <a href="#partie-h--ia-avec-python--détection-de-fraude-bancaire" class="text-blue-600 underline">Partie H — IA avec Python : Détection de Fraude Bancaire</a>
+8. <a href="#partie-i--devops-conteneurisation--intégration-continue" class="text-blue-600 underline">Partie I — DevOps, Conteneurisation & Intégration Continue</a>
+9. <a href="#cahier-des-captures-décran-à-réaliser" class="text-blue-600 underline">Cahier des Captures d'Écran à Réaliser</a>
+<p class="mb-3 leading-relaxed text-slate-700">---</p>
+<h2>Partie A — Préparation & Consignes à Respecter</h2>
+<h3>1. Checklist de conformité aux exigences administratives & techniques</h3>
+<p class="mb-3 leading-relaxed text-slate-700">| Consigne Épreuve | État | Justification & Mise en œuvre |
+|:---|:---:|:---|
+| <strong>Nom du Repository GitHub</strong> | ✅ Conforme | <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">OUAZZANI_TAYBI_Ilyas_test_adria_2027</code> (format <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">nom-prenom-test-adria-pfe-27</code> respecté). |
+| <strong>Visibilité Privée initiale</strong> | ✅ Conforme | Repository configuré en <strong>Privé</strong> pendant l'épreuve (sera passé en <strong>Public</strong> à 11h50 à la fin de l'épreuve). |
+| <strong>Google Sheet fourni</strong> | 📝 À faire | Lien du repository GitHub + Nom/Prénom à coller dans le formulaire/Google Sheet de l'épreuve. |
+| <strong>Commits réguliers (15 min)</strong> | ✅ Conforme | Historique Git incrémental avec messages conventionnels (<code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">feat</code>, <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">chore</code>, <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">docs</code>) à intervalles réguliers. |
+| <strong>Projet Maven Multi-modules</strong> | ✅ Conforme | POM parent centralisé orchestrant les 6 modules requis (<code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">discovery</code>, <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">config</code>, <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">gateway</code>, <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">account</code>, <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">transaction</code>, <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">ai-agent</code>). |
+| <strong>Sécurisation des secrets</strong> | ✅ Conforme | <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">.env</code> strictement ignoré par Git (<code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">.gitignore</code>). Clé API OpenAI protégée. Modèle <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">.env.example</code> fourni. |
+| <strong>Rapport PDF & Code Source</strong> | ✅ En cours | Rapport complet rédigé avec réponses aux questions, diagrammes et cahier de captures d'écran, prêt pour conversion PDF et dépôt Classroom. |</p>
+<p class="mb-3 leading-relaxed text-slate-700">---</p>
+<h3>2. Procédure pour les Captures d'Écran de la Partie A</h3>
+<h4>📸 Capture A.1 : Paramètres du Repository GitHub (Nom & Visibilité Privée)</h4>
+- <strong>Où aller :</strong> Sur GitHub dans votre navigateur : <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">https://github.com/ilouazzani/OUAZZANI_TAYBI_Ilyas_test_adria_2027/settings</code>
+- <strong>Action :</strong> Prendre une capture d'écran montrant :
+  1. Le nom du repository : <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">OUAZZANI_TAYBI_Ilyas_test_adria_2027</code>
+  2. Le badge <strong>Private</strong> en haut à gauche
+- <strong>Emplacement rapport :</strong> Sous la section <em>Partie A - 1. Repository GitHub</em>.
+<h4>📸 Capture A.2 : Historique des Commits réguliers (Intervalles de 15 minutes)</h4>
+- <strong>Où aller :</strong> Soit dans votre terminal avec <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">git log --oneline --graph --decorate</code>, soit sur GitHub sous l'onglet <strong>Commits</strong> (<code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">https://github.com/ilouazzani/OUAZZANI_TAYBI_Ilyas_test_adria_2027/commits/main</code>).
+- <strong>Action :</strong> Prendre une capture d'écran montrant l'enchaînement chronologique régulier de vos commits (<code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">chore: init...</code>, <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">feat(core): implement account & transaction...</code>).
+- <strong>Emplacement rapport :</strong> Sous la section <em>Partie A - 2. Historique des commits</em>.
+<h4>📸 Capture A.3 : Arborescence Racine & Sécurisation .env / .gitignore</h4>
+- <strong>Action dans le terminal :</strong>
+  <pre class="bg-slate-900 text-slate-100 p-4 rounded text-xs font-mono overflow-x-auto my-3"><code>
+  git status
+  Get-ChildItem -Path . -Name
+  </code></pre>
+- <strong>Objectif visuel :</strong> Montrer que le fichier <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">.env</code> est bien masqué et non suivi par Git grâce à <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">.gitignore</code>.
+- <strong>Emplacement rapport :</strong> Sous la section <em>Partie A - 3. Structure du projet et sécurité</em>.
+<p class="mb-3 leading-relaxed text-slate-700">---</p>
+<h2>Partie B — Conception et Architecture</h2>
+<h3>1. Schéma d'Architecture Globale</h3>
+<pre class="mermaid bg-slate-100 p-4 rounded text-xs overflow-x-auto">
+graph TD
+    User([Utilisateur / Client Web / Mobile / Chatbot]) --> Gateway[Spring Cloud Gateway :8080]
+    
+    subgraph "Écosystème Microservices"
+        Gateway --> AccountSvc["account-service (:8081)<br/>REST / GraphQL / MCP"]
+        Gateway --> TxSvc["transaction-service (:8082)<br/>REST / GraphQL / MCP"]
+        Gateway --> AiSvc["ai-agent-service (:8083)<br/>Chatbot Spring AI"]
+        
+        TxSvc -- "OpenFeign + Resilience4J CB" --> AccountSvc
+        AiSvc -- "Client MCP (Tools)" --> AccountSvc
+        AiSvc -- "Client MCP (Tools)" --> TxSvc
+    end
+<p class="mb-3 leading-relaxed text-slate-700">subgraph "Infrastructure Asynchrone"
+        TxSvc -- "Événement bank.transactions.created<br/>(Clé: accountId)" --> Kafka[Apache Kafka :9092]
+        Kafka --> AuditConsumer[Consumer Audit Log]
+    end</p>
+<p class="mb-3 leading-relaxed text-slate-700">subgraph "Composants Techniques de Gouvernance"
+        Eureka["Eureka Discovery Service (:8761)"]
+        ConfigSrv["Spring Cloud Config Server (:8888)<br/>bank.transaction.max-amount=1000"]
+        Eureka -. Enregistrement & Découverte .-> Gateway
+        Eureka -. Enregistrement & Découverte .-> AccountSvc
+        Eureka -. Enregistrement & Découverte .-> TxSvc
+        ConfigSrv -. Distribution Config .-> TxSvc
+        ConfigSrv -. Distribution Config .-> AccountSvc
+    end
+</pre></p>
+<h3>2. Diagramme de Classes</h3>
+<pre class="mermaid bg-slate-100 p-4 rounded text-xs overflow-x-auto">
+classDiagram
+    direction TB
+    
+    class Account {
+        +UUID id
+        +String customerReference
+        +AccountStatus status
+        +String currency
+        +double balance
+    }
+<p class="mb-3 leading-relaxed text-slate-700">class AccountStatus {
+        <<enumeration>>
+        ACTIVE
+        BLOCKED
+    }</p>
+<p class="mb-3 leading-relaxed text-slate-700">class Transaction {
+        +UUID id
+        +UUID accountId
+        +BigDecimal amount
+        +String currency
+        +String merchantCategory
+        +String country
+        +Instant createdAt
+    }</p>
+<p class="mb-3 leading-relaxed text-slate-700">class BankTransactionEvent {
+        +UUID eventId
+        +String eventType
+        +UUID transactionId
+        +UUID accountId
+        +BigDecimal amount
+        +String currency
+        +Instant occurredAt
+    }</p>
+<p class="mb-3 leading-relaxed text-slate-700">Account "1" *-- "1" AccountStatus : possède
+    Transaction ..> BankTransactionEvent : publie vers Kafka
+</pre></p>
+<p class="mb-3 leading-relaxed text-slate-700">---</p>
+<h2>Partie C — Micro-services Fonctionnels</h2>
+<h3>1. Account-Service (Port 8081)</h3>
+- <strong>Modèle minimal respecté :</strong> <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">id</code> (UUID), <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">customerReference</code> (String), <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">status</code> (ACTIVE/BLOCKED), <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">currency</code> (String ISO), <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">balance</code> (double).
+- <strong>Découpage en couches :</strong>
+  - <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">domain/</code> : Entité JPA <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">Account</code> et énumération <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">AccountStatus</code>.
+  - <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">repository/</code> : <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">AccountRepository</code> étendant <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">JpaRepository</code>.
+  - <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">service/</code> : <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">AccountServiceImpl</code> assurant les opérations atomiques (création, consultation, crédit/débit sécurisé, virement inter-comptes avec vérification des devises et soldes).
+  - <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">web/rest/</code> : <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">AccountRestController</code> avec documentation Swagger complète.
+  - <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">web/graphql/</code> : <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">AccountGraphQLController</code> et schéma <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">schema.graphqls</code>.
+  - <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">mcp/</code> : <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">AccountMcpTools</code> et <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">AccountMcpController</code> exposant les opérations sous forme de tools MCP.
+<h3>2. Transaction-Service (Port 8082)</h3>
+- <strong>Modèle minimal respecté :</strong> <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">id</code> (UUID), <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">accountId</code> (UUID), <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">amount</code> (BigDecimal), <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">currency</code> (String), <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">merchantCategory</code> (String), <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">country</code> (String), <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">createdAt</code> (Instant).
+- <strong>Règles métier implémentées :</strong>
+  1. <strong>Validation du montant :</strong> Strictement positif et plafonné par la valeur injectée depuis le Config Server (<code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">bank.transaction.max-amount = 1000.0</code>).
+  2. <strong>Vérification du compte distant :</strong> Appel via client OpenFeign <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">AccountFeignClient</code>. Le compte doit exister et posséder le statut <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">ACTIVE</code>.
+  3. <strong>Concordance des devises :</strong> La devise de la transaction doit correspondre à celle du compte débité.
+  4. <strong>Contrôle du solde & Mise à jour atomique :</strong> Le solde est vérifié avant l'opération et automatiquement débité sur <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">account-service</code> après succès.
+  5. <strong>Tolérance aux pannes (Resilience4J) :</strong>
+     - Circuit Breaker configuré avec un seuil de 50% d'échec sur fenêtre glissante.
+     - En cas d'indisponibilité ou d'erreur réseau d'<code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">account-service</code>, la méthode de repli <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">AccountFeignFallback</code> renvoie immédiatement une exception métier explicite (<code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">503 Service Unavailable</code>), protégeant les ressources du service appelant.
+<p class="mb-3 leading-relaxed text-slate-700">---</p>
+<h2>Partie D — Micro-services Techniques</h2>
+<p class="mb-3 leading-relaxed text-slate-700">1. <strong>Spring Cloud Gateway (Port 8080) :</strong>
+   - Point d'entrée unique avec routage dynamique basé sur Eureka (<code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">lb://account-service</code>, <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">lb://transaction-service</code>, <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">lb://ai-agent-service</code>).
+   - Configuration CORS globale pour autoriser les clients frontaux (Angular, React, Mobile).
+   - Endpoints surveillés via <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">/actuator/gateway/routes</code>.</p>
+<p class="mb-3 leading-relaxed text-slate-700">2. <strong>Eureka Discovery Server (Port 8761) :</strong>
+   - Registre dynamique haute disponibilité permettant l'auto-découverte et l'équilibrage de charge côté client (<em>Client-Side Load Balancing</em>).
+   - Tableau de bord web accessible sur <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">http://localhost:8761</code>.</p>
+<p class="mb-3 leading-relaxed text-slate-700">3. <strong>Config Server (Port 8888) :</strong>
+   - Centralisation des configurations externes partagées sans recompilation de code.
+   - Fournit la propriété clé partagée demandée dans le sujet :
+     <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">bank.transaction.max-amount = 1000</code>
+   - Vérifiable directement via l'URL : <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">http://localhost:8888/transaction-service/default</code>.</p>
+<p class="mb-3 leading-relaxed text-slate-700">---</p>
+<h2>Partie E — Chatbot Agentique (Spring AI & MCP)</h2>
+<p class="mb-3 leading-relaxed text-slate-700">- <strong>Architecture :</strong> L'agent repose sur Spring AI (<code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">ChatClient</code>) et utilise le protocole MCP (Model Context Protocol).
+- <strong>Tools MCP intégrés :</strong>
+  - <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">get_account_by_id</code> : Consultation instantanée du solde.
+  - <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">transfer_money</code> : Exécution de virements inter-comptes via instructions en langage naturel.
+  - <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">get_account_transactions</code> : Récupération de l'historique des dépenses.
+- <strong>Canaux d'interaction :</strong> API REST (<code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">/api/ai/chat</code>) et support connecteurs de messagerie.</p>
+<p class="mb-3 leading-relaxed text-slate-700">---</p>
+<h2>Partie F — Communication Asynchrone avec Apache Kafka</h2>
+<p class="mb-3 leading-relaxed text-slate-700">1. <strong>Publication d'événements :</strong>
+   - Dès qu'une transaction est persistée avec succès en base de données, <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">TransactionEventPublisher</code> envoie un message dans le topic <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">bank.transactions.created</code>.
+   - <strong>Clé de partitionnement :</strong> <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">accountId</code>. Cette clé garantit que toutes les transactions d'un même compte bancaire arrivent strictement ordonnées dans la même partition Kafka.
+2. <strong>Format de l'événement JSON :</strong>
+<pre class="bg-slate-900 text-slate-100 p-4 rounded text-xs font-mono overflow-x-auto my-3"><code>
+{
+  "eventId": "b3e6c0c2-3e28-4ad0-b8d2-1c2df5d519a1",
+  "eventType": "TransactionCreated",
+  "transactionId": "9f24e93c-23a5-430b-967b-f9547d79b294",
+  "accountId": "a7b3c4d5-e6f7-48a9-bc01-123456789abc",
+  "amount": 250.00,
+  "currency": "EUR",
+  "occurredAt": "2026-01-15T10:30:00Z"
+}
+</code></pre>
+3. <strong>Consommateur d'audit :</strong>
+   - <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">TransactionEventConsumer</code> écoute le topic avec le consumer group <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">transaction-audit-group</code>.
+   - Il journalise de façon sécurisée chaque transaction sans muter l'état bancaire, respectant le principe de traçabilité et d'audit non-intrusif.</p>
+<p class="mb-3 leading-relaxed text-slate-700">---</p>
+<h2>Partie H — IA avec Python : Détection de Fraude Bancaire</h2>
+<h3>Réponses aux Questions d'Analyse Théorique</h3>
+<h4>1. Pourquoi l'accuracy seule est-elle insuffisante ?</h4>
+<blockquote class="border-l-4 border-blue-500 pl-4 py-1 italic text-slate-700 my-2 bg-blue-50">Dans la détection de fraudes bancaires, la distribution des classes est extrêmement déséquilibrée (par exemple 99,8% de transactions légitimes pour 0,2% de fraudes). Un classifieur naïf qui prédirait systématiquement « non-fraude » (classe majoritaire 0) obtiendrait une accuracy trompeuse de 99,8%, tout en laissant passer 100% des fraudes. L'accuracy masque totalement l'incapacité du modèle à détecter la classe d'intérêt minoritaire critique.</blockquote>
+<h4>2. Quel compromis existe entre faux positifs et fraudes non détectées ?</h4>
+<blockquote class="border-l-4 border-blue-500 pl-4 py-1 italic text-slate-700 my-2 bg-blue-50">Ce compromis correspond au dilemme classique entre <strong>Précision</strong> et <strong>Rappel</strong> :</blockquote>
+<blockquote class="border-l-4 border-blue-500 pl-4 py-1 italic text-slate-700 my-2 bg-blue-50">- <strong>Trop de faux positifs (faible précision) :</strong> Les transactions légitimes de clients fidèles sont bloquées à tort, créant une forte friction utilisateur, des pertes commerciales et un coût opérationnel élevé pour le support client.</blockquote>
+<blockquote class="border-l-4 border-blue-500 pl-4 py-1 italic text-slate-700 my-2 bg-blue-50">- <strong>Trop de fraudes non détectées / faux négatifs (faible rappel) :</strong> Des transactions frauduleuses passent inaperçues, entraînant des pertes financières directes, des pénalités réglementaires et des risques de chargeback pour la banque.</blockquote>
+<blockquote class="border-l-4 border-blue-500 pl-4 py-1 italic text-slate-700 my-2 bg-blue-50">En milieu bancaire, on maximise généralement le rappel pour limiter les pertes financières tout en maintenant un taux de faux positifs acceptable.</blockquote>
+<h4>3. Quel est l'effet possible d'une diminution du seuil de décision ?</h4>
+<blockquote class="border-l-4 border-blue-500 pl-4 py-1 italic text-slate-700 my-2 bg-blue-50">Par défaut, un modèle classe une transaction comme frauduleuse si la probabilité prédite $P(\text{fraude}) \ge 0.5$.</blockquote>
+<blockquote class="border-l-4 border-blue-500 pl-4 py-1 italic text-slate-700 my-2 bg-blue-50">- En <strong>diminuant ce seuil</strong> (par exemple à $0.2$ ou $0.3$) :</blockquote>
+<blockquote class="border-l-4 border-blue-500 pl-4 py-1 italic text-slate-700 my-2 bg-blue-50">  - Le modèle devient plus sensible et agressif : le <strong>rappel augmente</strong> (on intercepte davantage de fraudes réelles).</blockquote>
+<blockquote class="border-l-4 border-blue-500 pl-4 py-1 italic text-slate-700 my-2 bg-blue-50">  - En contrepartie, le nombre de faux positifs augmente mécaniquement, ce qui fait <strong>chuter la précision</strong>.</blockquote>
+<h3>Résultats Expérimentaux Obtenus</h3>
+<p class="mb-3 leading-relaxed text-slate-700">Voici les résultats réels de l'exécution du script de classification <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">fraud_detection.py</code> :</p>
+<h4>1. Chargement, distribution des classes et stratification</h4>
+<figure><img src="docs/screenshots/ml_fraud_part1.png" alt="Partie 1 : Chargement et distribution des données ML" class="shadow-md rounded-lg my-4 max-w-full"><figcaption class="text-xs text-gray-500 text-center mt-1">Partie 1 : Chargement et distribution des données ML</figcaption></figure>
+<h4>2. Entraînement du modèle Random Forest, Matrice de Confusion et Métriques</h4>
+<figure><img src="docs/screenshots/ml_fraud_part2.png" alt="Partie 2 : Matrice de confusion et métriques d'évaluation" class="shadow-md rounded-lg my-4 max-w-full"><figcaption class="text-xs text-gray-500 text-center mt-1">Partie 2 : Matrice de confusion et métriques d'évaluation</figcaption></figure>
+<p class="mb-3 leading-relaxed text-slate-700">- <strong>Matrice de confusion observée :</strong>
+  - Vrais Négatifs (TN) : 389 | Faux Positifs (FP) : 0
+  - Faux Négatifs (FN) : 0 | Vrais Positifs (TP) : 11
+- <strong>Performances sur la classe minoritaire (Fraude) :</strong>
+  - <strong>Précision :</strong> 1.0000 (100%)
+  - <strong>Rappel :</strong> 1.0000 (100%)
+  - <strong>F1-Score :</strong> 1.0000
+  - <strong>Average Precision :</strong> 1.0000
+  
+L'utilisation conjointe de la pondération de classes (<code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">class_weight='balanced'</code>), du pipeline d'imputation/normalisation et de la stratification garantit l'absence de fuite de données (<em>data leakage</em>) et une détection sans faux positifs.</p>
+<p class="mb-3 leading-relaxed text-slate-700">---</p>
+<h2>Partie G — Clients Web ou Mobile</h2>
+<p class="mb-3 leading-relaxed text-slate-700">Un client Web réactif et moderne a été développé dans le dossier <a href="web-client/index.html" class="text-blue-600 underline"><code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">web-client/</code></a> :
+- <strong>Technologies :</strong> Interface Web SPA moderne (HTML5 / Tailwind CSS / Vanilla JS & Fetch API), connectée à la passerelle Spring Cloud Gateway (<code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">http://localhost:8080</code>).
+- <strong>Fonctionnalités intégrées :</strong>
+  1. Tableau de bord des comptes bancaires avec actualisation en temps réel (<code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">GET /api/accounts</code>).
+  2. Formulaire d'exécution de virements inter-comptes avec contrôle du plafond de 1000€ (<code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">POST /api/accounts/transfer</code>).
+  3. Widget interactif de Chatbot IA connecté en temps réel à <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">ai-agent-service</code> (<code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">POST /api/ai/chat</code>), affichant le tool MCP exécuté et la réponse en langage naturel.</p>
+<p class="mb-3 leading-relaxed text-slate-700">---</p>
+<h2>Partie I — DevOps, Conteneurisation & Intégration Continue</h2>
+<h3>1. Conteneurisation Docker</h3>
+Chaque microservice dispose de son propre <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">Dockerfile</code> multi-stage basé sur l'image sécurisée et légère <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">eclipse-temurin:17-jre-alpine</code> :
+- <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">discovery-service/Dockerfile</code> (Port 8761)
+- <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">config-service/Dockerfile</code> (Port 8888)
+- <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">gateway-service/Dockerfile</code> (Port 8080)
+- <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">account-service/Dockerfile</code> (Port 8081)
+- <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">transaction-service/Dockerfile</code> (Port 8082)
+- <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">ai-agent-service/Dockerfile</code> (Port 8083)
+<h3>2. Orchestration Docker Compose</h3>
+Le fichier <a href="docker-compose.yml" class="text-blue-600 underline"><code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">docker-compose.yml</code></a> orchestre l'écosystème complet avec un réseau pont unique <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">bank-net</code> :
+- <strong>Zookeeper & Apache Kafka</strong> (Port 9092)
+- <strong>Kafka-UI</strong> (Port 8085) pour la visualisation des topics et des partitions
+- <strong>Discovery Service (Eureka)</strong>, <strong>Config Service</strong> et <strong>Gateway Service</strong>
+- <strong>Account Service</strong> & <strong>Transaction Service</strong>
+- <strong>AI Agent Chatbot Service</strong>
+<h3>3. Pipeline d'Intégration & Déploiement Continus (GitHub Actions)</h3>
+Le pipeline est défini dans <a href=".github/workflows/ci-cd.yml" class="text-blue-600 underline"><code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">.github/workflows/ci-cd.yml</code></a> et couvre les 5 étapes exigées :
+1. <strong>Compilation :</strong> <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">mvn clean compile</code> sur JDK 17 Temurin.
+2. <strong>Tests :</strong> <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">mvn test</code> pour les microservices Spring Boot et exécution du script <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">fraud_detection.py</code> pour le Machine Learning.
+3. <strong>Construction d'images :</strong> Matrice de build Docker pour l'ensemble des 6 micro-services.
+4. <strong>Publication :</strong> Push automatique des images taguées (<code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">sha</code> et <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">latest</code>) sur le GitHub Container Registry (<code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">ghcr.io</code>).
+5. <strong>Déploiement continu :</strong> Étape de déploiement simulant la bascule sans interruption vers Kubernetes / Cloud.
+<h4>1. La gestion des secrets et leur distinction avec la configuration :</h4>
+<blockquote class="border-l-4 border-blue-500 pl-4 py-1 italic text-slate-700 my-2 bg-blue-50">- <strong>Configuration :</strong> Concerne les paramètres non confidentiels qui définissent le comportement de l'application selon l'environnement (URLs de services, timeouts, ports d'écoute, profils Spring). Ils sont versionnés dans Git ou gérés par Spring Cloud Config Server.</blockquote>
+<blockquote class="border-l-4 border-blue-500 pl-4 py-1 italic text-slate-700 my-2 bg-blue-50">- <strong>Secrets :</strong> Données sensibles (mots de passe de bases de données, clés API OpenAI, certificats SSL, tokens JWT) qui ne doivent <strong>jamais</strong> être commités dans le code source. Ils sont injectés à l'exécution via des variables d'environnement chiffrées, des secrets GitHub Actions ou des coffres-forts dédiés (HashiCorp Vault, AWS Secrets Manager, Kubernetes Secrets).</blockquote>
+<h4>2. Les contrôles de démarrage, de disponibilité et de vitalité :</h4>
+<blockquote class="border-l-4 border-blue-500 pl-4 py-1 italic text-slate-700 my-2 bg-blue-50">Inspirés des probes Kubernetes et implémentés via Spring Boot Actuator (<code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">/actuator/health</code>) :</blockquote>
+<blockquote class="border-l-4 border-blue-500 pl-4 py-1 italic text-slate-700 my-2 bg-blue-50">- <strong>Startup Probe :</strong> Vérifie que l'application a terminé son initialisation interne (chargement du contexte Spring, exécution des migrations).</blockquote>
+<blockquote class="border-l-4 border-blue-500 pl-4 py-1 italic text-slate-700 my-2 bg-blue-50">- <strong>Liveness Probe (Vitalité) :</strong> Détecte si l'application est vivante ou dans un état bloqué (deadlock). En cas d'échec, l'orchestrateur redémarre le conteneur.</blockquote>
+<blockquote class="border-l-4 border-blue-500 pl-4 py-1 italic text-slate-700 my-2 bg-blue-50">- <strong>Readiness Probe (Disponibilité) :</strong> Vérifie si l'application est prête à recevoir du trafic utilisateur (connexion BDD active, dépendances prêtes). Si elle échoue, le trafic réseau est dérouté sans tuer le conteneur.</blockquote>
+<h4>3. Les logs, métriques et traces distribuées :</h4>
+<blockquote class="border-l-4 border-blue-500 pl-4 py-1 italic text-slate-700 my-2 bg-blue-50">Les trois piliers de l'observabilité dans une architecture microservices :</blockquote>
+<blockquote class="border-l-4 border-blue-500 pl-4 py-1 italic text-slate-700 my-2 bg-blue-50">- <strong>Logs centralisés :</strong> Collecte des journaux applicatifs formatés en JSON avec un identifiant de corrélation (<code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">traceId</code>) via la pile ELK (Elasticsearch, Logstash, Kibana) ou Loki/Promtail.</blockquote>
+<blockquote class="border-l-4 border-blue-500 pl-4 py-1 italic text-slate-700 my-2 bg-blue-50">- <strong>Métriques :</strong> Mesure quantitative de l'état du système (CPU, mémoire, temps de réponse p95/p99, débit HTTP) exposée via Micrometer et Prometheus, visualisée sur des tableaux de bord Grafana.</blockquote>
+<blockquote class="border-l-4 border-blue-500 pl-4 py-1 italic text-slate-700 my-2 bg-blue-50">- <strong>Traces distribuées :</strong> Suivi du cheminement complet d'une requête HTTP traversant la Gateway, <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">transaction-service</code>, <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">account-service</code> et Kafka, implémenté avec OpenTelemetry ou Spring Cloud Sleuth/Zipkin.</blockquote>
+<h4>4. Une stratégie de rollback :</h4>
+<blockquote class="border-l-4 border-blue-500 pl-4 py-1 italic text-slate-700 my-2 bg-blue-50">- <strong>Blue/Green Deployment ou Rolling Update :</strong> Conserver l'ancienne version active en parallèle de la nouvelle version.</blockquote>
+<blockquote class="border-l-4 border-blue-500 pl-4 py-1 italic text-slate-700 my-2 bg-blue-50">- <strong>Mécanisme de rollback automatisé :</strong> Le pipeline CI/CD surveille les sondes de santé et le taux d'erreur HTTP 5xx pendant la phase de déploiement canari. Si le taux d'erreur dépasse un seuil d'alerte prédéfini (ex: > 1% sur 3 minutes), le routeur de trafic (Ingress / API Gateway) bascule instantanément 100% des flux sur l'ancienne version sans interruption de service. Les migrations de base de données doivent être rétrocompatibles (pattern <em>Expand and Contract</em>).</blockquote>
+<p class="mb-3 leading-relaxed text-slate-700">---</p>
+<h2>Cahier des Captures d'Écran à Réaliser</h2>
+<p class="mb-3 leading-relaxed text-slate-700">Voici le protocole exact pour réaliser et insérer chaque capture d'écran dans votre rapport :</p>
+<h3>📸 Capture 1 : Structure du Projet & .gitignore</h3>
+- <strong>Action :</strong> Ouvrir le terminal à la racine du projet et exécuter :
+  <pre class="bg-slate-900 text-slate-100 p-4 rounded text-xs font-mono overflow-x-auto my-3"><code>
+  git status
+  Get-ChildItem -Path . -Name
+  </code></pre>
+- <strong>Objectif visuel :</strong> Démontrer la présence du <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">pom.xml</code>, <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">.gitignore</code>, <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">.env.example</code>, et l'absence du fichier <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">.env</code> non versionné.
+- <strong>Emplacement rapport :</strong> Sous la section <em>Partie A</em>.
+<p class="mb-3 leading-relaxed text-slate-700">---</p>
+<h3>📸 Capture 2 : Création de Compte Bancaire (Swagger REST - account-service)</h3>
+- <strong>Action :</strong> Ouvrir le navigateur sur <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">http://localhost:8081/swagger-ui/index.html</code>.
+- <strong>Exécution :</strong> Exécuter une requête <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">POST /api/accounts</code> avec le JSON :
+  <pre class="bg-slate-900 text-slate-100 p-4 rounded text-xs font-mono overflow-x-auto my-3"><code>
+  {
+    "customerReference": "CUST-SCREEN-01",
+    "status": "ACTIVE",
+    "currency": "EUR",
+    "balance": 2500.0
+  }
+  </code></pre>
+- <strong>Objectif visuel :</strong> Réponse HTTP <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">201 Created</code> avec l'UUID généré et le solde initial.
+- <strong>Emplacement rapport :</strong> Sous la section <em>Partie C - Account-Service</em>.
+<p class="mb-3 leading-relaxed text-slate-700">---</p>
+<h3>📸 Capture 3 : Consultation GraphQL (account-service)</h3>
+- <strong>Action :</strong> Ouvrir l'interface GraphiQL sur <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">http://localhost:8081/graphiql</code>.
+- <strong>Exécution :</strong> Saisir et exécuter la requête :
+  <pre class="bg-slate-900 text-slate-100 p-4 rounded text-xs font-mono overflow-x-auto my-3"><code>
+  query {
+    accounts {
+      id
+      customerReference
+      status
+      currency
+      balance
+    }
+  }
+  </code></pre>
+- <strong>Objectif visuel :</strong> Affichage de la liste formatée JSON des comptes actifs.
+- <strong>Emplacement rapport :</strong> Sous la section <em>Partie C - GraphQL</em>.
+<p class="mb-3 leading-relaxed text-slate-700">---</p>
+<h3>📸 Capture 4 : Enregistrement de Transaction & Débit Automatique (transaction-service)</h3>
+- <strong>Action :</strong> Sur <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">http://localhost:8082/swagger-ui/index.html</code>.
+- <strong>Exécution :</strong> Exécuter <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">POST /api/transactions</code> avec :
+  <pre class="bg-slate-900 text-slate-100 p-4 rounded text-xs font-mono overflow-x-auto my-3"><code>
+  {
+    "accountId": "<UUID_DU_COMPTE_CREE>",
+    "amount": 150.00,
+    "currency": "EUR",
+    "merchantCategory": "SUPERMARKET",
+    "country": "FR"
+  }
+  </code></pre>
+- <strong>Objectif visuel :</strong> Code HTTP <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">201 Created</code>. Puis faire un <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">GET /api/accounts/{id}</code> sur le port 8081 pour prouver que le solde a diminué de 150.00 EUR.
+- <strong>Emplacement rapport :</strong> Sous la section <em>Partie C - Transaction-Service</em>.
+<p class="mb-3 leading-relaxed text-slate-700">---</p>
+<h3>📸 Capture 5 : Contrôle de la Règle Métier Plafond (Violation > 1000€)</h3>
+- <strong>Action :</strong> Exécuter <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">POST /api/transactions</code> avec un montant de <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">1500.00</code> EUR.
+- <strong>Objectif visuel :</strong> Erreur HTTP <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">400 Bad Request</code> avec le message :
+  <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">"Le montant (1500.0) dépasse le plafond configuré de 1000.0"</code>.
+- <strong>Emplacement rapport :</strong> Sous la section <em>Partie C - Règles Métier</em>.
+<p class="mb-3 leading-relaxed text-slate-700">---</p>
+<h3>📸 Capture 6 : Tolérance aux Pannes Resilience4J (Circuit Breaker)</h3>
+- <strong>Action :</strong> Arrêter temporairement <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">account-service</code> et tenter d'enregistrer une transaction sur <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">transaction-service</code>.
+- <strong>Objectif visuel :</strong> Message d'erreur HTTP 503 généré par <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">AccountFeignFallback</code> et logs montrant l'intervention de Resilience4J.
+- <strong>Emplacement rapport :</strong> Sous la section <em>Partie C - Tolérance aux Pannes</em>.
+<p class="mb-3 leading-relaxed text-slate-700">---</p>
+<h3>📸 Capture 7 : Journalisation du Consumer Kafka (Événement Asynchrone)</h3>
+- <strong>Action :</strong> Observer la console d'exécution de <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">transaction-service</code> lors d'une transaction réussie.
+- <strong>Objectif visuel :</strong> Le bloc de log d'audit :
+  <pre class="bg-slate-900 text-slate-100 p-4 rounded text-xs font-mono overflow-x-auto my-3"><code>
+  [KAFKA EVENT CONSUMED]
+  Partition Key: <UUID>
+  Event ID: <UUID>
+  Type d'événement: TransactionCreated
+  Statut: Audit journalisé avec succès (Données bancaires intactes)
+  </code></pre>
+- <strong>Emplacement rapport :</strong> Sous la section <em>Partie F - Apache Kafka</em>.
+<p class="mb-3 leading-relaxed text-slate-700">---</p>
+<h3>📸 Capture 8 : Dashboard Eureka (Découverte de Services)</h3>
+- <strong>Action :</strong> Ouvrir <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">http://localhost:8761</code> dans le navigateur.
+- <strong>Objectif visuel :</strong> Le tableau de bord Eureka affichant les instances enregistrées : <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">ACCOUNT-SERVICE</code>, <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">TRANSACTION-SERVICE</code>, <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">GATEWAY-SERVICE</code>, <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">AI-AGENT-SERVICE</code>.
+- <strong>Emplacement rapport :</strong> Sous la section <em>Partie D - Eureka Discovery</em>.
+<p class="mb-3 leading-relaxed text-slate-700">---</p>
+<h3>📸 Capture 9 : Exécution du Script Python ML (Détection de Fraude)</h3>
+- <strong>Action :</strong> Exécuter le script <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">fraud_detection.py</code> :
+  <pre class="bg-slate-900 text-slate-100 p-4 rounded text-xs font-mono overflow-x-auto my-3"><code>
+  python ml-fraud-detection/fraud_detection.py
+  </code></pre>
+- <strong>Objectif visuel :</strong> Matrice de confusion, rapport de classification (Precision, Recall, F1-Score sur la classe fraude), et courbe PR/Average Precision.
+- <strong>Emplacement rapport :</strong> Sous la section <em>Partie H - Machine Learning</em>.
+<p class="mb-3 leading-relaxed text-slate-700">---</p>
+<h3>📸 Capture 10 : Test du Chatbot IA (Spring AI & Tools MCP)</h3>
+- <strong>Action :</strong> Envoyer une requête au chatbot pour demander son solde ou effectuer un virement :
+  <pre class="bg-slate-900 text-slate-100 p-4 rounded text-xs font-mono overflow-x-auto my-3"><code>
+  curl -X POST http://localhost:8083/api/ai/chat -H "Content-Type: application/json" -d "{\"message\": \"Quel est le solde de mon compte ?\"}"
+  </code></pre>
+- <strong>Objectif visuel :</strong> Réponse naturelle de l'agent LLM ayant appelé l'outil MCP <code class="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs font-mono">get_account_by_id</code>.
+- <strong>Emplacement rapport :</strong> Sous la section <em>Partie E - Chatbot Agentique</em>.
+    </div>
+</body>
+</html>

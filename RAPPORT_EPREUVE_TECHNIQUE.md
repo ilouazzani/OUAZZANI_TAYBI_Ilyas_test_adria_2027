@@ -258,9 +258,43 @@ L'utilisation conjointe de la pondération de classes (`class_weight='balanced'`
 
 ---
 
+## Partie G — Clients Web ou Mobile
+
+Un client Web réactif et moderne a été développé dans le dossier [`web-client/`](web-client/index.html) :
+- **Technologies :** Interface Web SPA moderne (HTML5 / Tailwind CSS / Vanilla JS & Fetch API), connectée à la passerelle Spring Cloud Gateway (`http://localhost:8080`).
+- **Fonctionnalités intégrées :**
+  1. Tableau de bord des comptes bancaires avec actualisation en temps réel (`GET /api/accounts`).
+  2. Formulaire d'exécution de virements inter-comptes avec contrôle du plafond de 1000€ (`POST /api/accounts/transfer`).
+  3. Widget interactif de Chatbot IA connecté en temps réel à `ai-agent-service` (`POST /api/ai/chat`), affichant le tool MCP exécuté et la réponse en langage naturel.
+
+---
+
 ## Partie I — DevOps, Conteneurisation & Intégration Continue
 
-### Réponses aux Questions DevOps
+### 1. Conteneurisation Docker
+Chaque microservice dispose de son propre `Dockerfile` multi-stage basé sur l'image sécurisée et légère `eclipse-temurin:17-jre-alpine` :
+- `discovery-service/Dockerfile` (Port 8761)
+- `config-service/Dockerfile` (Port 8888)
+- `gateway-service/Dockerfile` (Port 8080)
+- `account-service/Dockerfile` (Port 8081)
+- `transaction-service/Dockerfile` (Port 8082)
+- `ai-agent-service/Dockerfile` (Port 8083)
+
+### 2. Orchestration Docker Compose
+Le fichier [`docker-compose.yml`](docker-compose.yml) orchestre l'écosystème complet avec un réseau pont unique `bank-net` :
+- **Zookeeper & Apache Kafka** (Port 9092)
+- **Kafka-UI** (Port 8085) pour la visualisation des topics et des partitions
+- **Discovery Service (Eureka)**, **Config Service** et **Gateway Service**
+- **Account Service** & **Transaction Service**
+- **AI Agent Chatbot Service**
+
+### 3. Pipeline d'Intégration & Déploiement Continus (GitHub Actions)
+Le pipeline est défini dans [`.github/workflows/ci-cd.yml`](.github/workflows/ci-cd.yml) et couvre les 5 étapes exigées :
+1. **Compilation :** `mvn clean compile` sur JDK 17 Temurin.
+2. **Tests :** `mvn test` pour les microservices Spring Boot et exécution du script `fraud_detection.py` pour le Machine Learning.
+3. **Construction d'images :** Matrice de build Docker pour l'ensemble des 6 micro-services.
+4. **Publication :** Push automatique des images taguées (`sha` et `latest`) sur le GitHub Container Registry (`ghcr.io`).
+5. **Déploiement continu :** Étape de déploiement simulant la bascule sans interruption vers Kubernetes / Cloud.
 
 #### 1. La gestion des secrets et leur distinction avec la configuration :
 > - **Configuration :** Concerne les paramètres non confidentiels qui définissent le comportement de l'application selon l'environnement (URLs de services, timeouts, ports d'écoute, profils Spring). Ils sont versionnés dans Git ou gérés par Spring Cloud Config Server.
