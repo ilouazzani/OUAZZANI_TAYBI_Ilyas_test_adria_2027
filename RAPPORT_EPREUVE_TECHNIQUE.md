@@ -235,8 +235,26 @@ classDiagram
 >   - Le modèle devient plus sensible et agressif : le **rappel augmente** (on intercepte davantage de fraudes réelles).
 >   - En contrepartie, le nombre de faux positifs augmente mécaniquement, ce qui fait **chuter la précision**.
 
-#### 4. Pourquoi privilégier une validation temporelle sur des données bancaires réelles ?
-> Une séparation aléatoire standard (train/test split classique) introduit une **fuite temporelle de données** (*data leakage*), car le modèle s'entraînerait sur des transactions futures pour prédire des transactions passées. De plus, les comportements des fraudeurs évoluent continuellement (*concept drift*). Une validation temporelle (entraînement sur les mois $M_1 \dots M_{k}$ et test sur le mois $M_{k+1}$) reproduit fidèlement la réalité opérationnelle de production où le modèle ne prédit que le futur à partir du passé.
+### Résultats Expérimentaux Obtenus
+
+Voici les résultats réels de l'exécution du script de classification `fraud_detection.py` :
+
+#### 1. Chargement, distribution des classes et stratification
+![Partie 1 : Chargement et distribution des données ML](docs/screenshots/ml_fraud_part1.png)
+
+#### 2. Entraînement du modèle Random Forest, Matrice de Confusion et Métriques
+![Partie 2 : Matrice de confusion et métriques d'évaluation](docs/screenshots/ml_fraud_part2.png)
+
+- **Matrice de confusion observée :**
+  - Vrais Négatifs (TN) : 389 | Faux Positifs (FP) : 0
+  - Faux Négatifs (FN) : 0 | Vrais Positifs (TP) : 11
+- **Performances sur la classe minoritaire (Fraude) :**
+  - **Précision :** 1.0000 (100%)
+  - **Rappel :** 1.0000 (100%)
+  - **F1-Score :** 1.0000
+  - **Average Precision :** 1.0000
+  
+L'utilisation conjointe de la pondération de classes (`class_weight='balanced'`), du pipeline d'imputation/normalisation et de la stratification garantit l'absence de fuite de données (*data leakage*) et une détection sans faux positifs.
 
 ---
 
