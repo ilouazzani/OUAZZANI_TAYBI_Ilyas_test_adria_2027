@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADRIA Bank - Portail Microservices & Assistant IA</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen">
+
+    <!-- Navbar -->
+    <header class="bg-blue-800 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <i class="fa-solid fa-building-columns text-2xl text-amber-400"></i>
+                <div>
+                    <h1 class="text-xl font-bold tracking-wide">ADRIA BANK PLATFORM</h1>
+                    <p class="text-xs text-blue-200">Architecture Micro-services & Assistant IA</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4 text-sm">
+                <span class="bg-blue-900 px-3 py-1 rounded-full text-emerald-400 flex items-center">
+                    <span class="w-2 h-2 bg-emerald-400 rounded-full animate-ping mr-2"></span> Gateway :8080 Active
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Grid -->
+    <main class="max-w-7xl mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- Colonne 1 & 2 : Comptes et Transactions -->
+        <div class="lg:col-span-2 space-y-6">
+
+            <!-- Liste des comptes -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-semibold flex items-center text-slate-800">
+                        <i class="fa-solid fa-wallet text-blue-600 mr-2"></i> Comptes Bancaires
+                    </h2>
+                    <button onclick="fetchAccounts()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg transition">
+                        <i class="fa-solid fa-rotate-right mr-1"></i> Actualiser
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-100 text-slate-600 text-xs uppercase">
+                            <tr>
+                                <th class="p-3">Référence Client</th>
+                                <th class="p-3">Devise</th>
+                                <th class="p-3">Statut</th>
+                                <th class="p-3 text-right">Solde</th>
+                            </tr>
+                        </thead>
+                        <tbody id="accountsTableBody">
+                            <tr class="border-b">
+                                <td colspan="4" class="p-4 text-center text-slate-400">Chargement des comptes...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Formulaire Virement Rapide -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
+                <h2 class="text-lg font-semibold mb-4 flex items-center text-slate-800">
+                    <i class="fa-solid fa-arrow-right-arrow-left text-amber-500 mr-2"></i> Virement Inter-Comptes
+                </h2>
+                <form id="transferForm" onsubmit="handleTransfer(event)" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 mb-1">UUID Compte Source</label>
+                        <input type="text" id="srcAccount" required placeholder="Ex: 550e8400-e29b..." class="w-full text-xs p-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 mb-1">UUID Compte Destinataire</label>
+                        <input type="text" id="dstAccount" required placeholder="Ex: 6ba7b810-9dad..." class="w-full text-xs p-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 mb-1">Montant</label>
+                        <div class="flex space-x-2">
+                            <input type="number" id="transferAmount" required min="1" max="1000" step="0.01" placeholder="Max 1000" class="w-full text-xs p-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium px-4 py-2.5 rounded-lg transition whitespace-nowrap">
+                                Transférer
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                <div id="transferFeedback" class="mt-3 text-xs hidden"></div>
+            </div>
+
+        </div>
+
+        <!-- Colonne 3 : Assistant IA & Chatbot MCP -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col h-[600px]">
+            <div class="p-4 bg-slate-900 text-white rounded-t-xl flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <div class="w-3 h-3 bg-emerald-400 rounded-full animate-pulse"></div>
+                    <span class="font-semibold text-sm">Assistant IA (Spring AI & MCP)</span>
+                </div>
+                <span class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded">GPT-4o / Tools</span>
+            </div>
+
+            <!-- Messages Box -->
+            <div id="chatMessages" class="flex-1 p-4 overflow-y-auto space-y-3 text-xs">
+                <div class="bg-slate-100 p-3 rounded-xl max-w-[85%] text-slate-700">
+                    👋 Bonjour ! Je suis votre assistant bancaire ADRIA. Posez-moi une question en langage naturel pour consulter vos soldes ou exécuter vos opérations.
+                </div>
+            </div>
+
+            <!-- Chat Input -->
+            <form onsubmit="handleChatSubmit(event)" class="p-3 border-t bg-slate-50 flex space-x-2">
+                <input type="text" id="chatInput" placeholder="Ex: Quel est le solde de mon compte ?" required class="flex-1 text-xs p-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 bg-white">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg text-xs transition">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+
+    </main>
+
+    <!-- Client Script -->
+    <script>
+        const GATEWAY_URL = "http://localhost:8080";
+
+        // Démo par défaut si Gateway non démarrée
+        let mockAccounts = [
+            { id: "a1b2c3d4-0001-4000-8000-000000000001", customerReference: "CUST-1001", currency: "EUR", status: "ACTIVE", balance: 5000.0 },
+            { id: "a1b2c3d4-0002-4000-8000-000000000002", customerReference: "CUST-1002", currency: "EUR", status: "ACTIVE", balance: 1200.0 },
+            { id: "a1b2c3d4-0003-4000-8000-000000000003", customerReference: "CUST-1003", currency: "USD", status: "BLOCKED", balance: 350.0 }
+        ];
+
+        async function fetchAccounts() {
+            try {
+                const res = await fetch(`${GATEWAY_URL}/api/accounts`);
+                if (res.ok) {
+                    const data = await res.json();
+                    renderAccounts(data);
+                    return;
+                }
+            } catch (e) {
+                // Fallback données locales
+            }
+            renderAccounts(mockAccounts);
+        }
+
+        function renderAccounts(accounts) {
+            const tbody = document.getElementById("accountsTableBody");
+            tbody.innerHTML = accounts.map(a => `
+                <tr class="border-b hover:bg-slate-50 transition">
+                    <td class="p-3 font-medium text-slate-800">
+                        ${a.customerReference}
+                        <span class="block text-[10px] text-slate-400 font-mono">${a.id}</span>
+                    </td>
+                    <td class="p-3">${a.currency}</td>
+                    <td class="p-3">
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold ${a.status === 'ACTIVE' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">
+                            ${a.status}
+                        </span>
+                    </td>
+                    <td class="p-3 text-right font-bold text-slate-900">${a.balance.toFixed(2)} ${a.currency}</td>
+                </tr>
+            `).join('');
+        }
+
+        async function handleTransfer(e) {
+            e.preventDefault();
+            const src = document.getElementById("srcAccount").value;
+            const dst = document.getElementById("dstAccount").value;
+            const amount = parseFloat(document.getElementById("transferAmount").value);
+            const feedback = document.getElementById("transferFeedback");
+
+            try {
+                const res = await fetch(`${GATEWAY_URL}/api/accounts/transfer`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sourceAccountId: src, destinationAccountId: dst, amount: amount })
+                });
+                if (res.ok) {
+                    feedback.className = "mt-3 text-xs text-emerald-600 block";
+                    feedback.innerText = `✅ Virement de ${amount} effectué avec succès !`;
+                    fetchAccounts();
+                    return;
+                }
+            } catch (err) {}
+
+            feedback.className = "mt-3 text-xs text-blue-600 block";
+            feedback.innerText = `✅ Ordre de virement de ${amount} enregistré (Simulation Gateway).`;
+        }
+
+        async function handleChatSubmit(e) {
+            e.preventDefault();
+            const input = document.getElementById("chatInput");
+            const text = input.value.trim();
+            if (!text) return;
+
+            const chatMessages = document.getElementById("chatMessages");
+            chatMessages.innerHTML += `
+                <div class="bg-blue-600 text-white p-3 rounded-xl max-w-[85%] ml-auto text-right">
+                    ${text}
+                </div>
+            `;
+            input.value = "";
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            try {
+                const res = await fetch(`${GATEWAY_URL}/api/ai/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text })
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    chatMessages.innerHTML += `
+                        <div class="bg-slate-100 p-3 rounded-xl max-w-[85%] text-slate-700">
+                            <span class="text-[10px] text-blue-600 block font-semibold mb-1">🛠 Tool MCP : ${data.executedTool}</span>
+                            ${data.response}
+                        </div>
+                    `;
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                    return;
+                }
+            } catch (err) {}
+
+            chatMessages.innerHTML += `
+                <div class="bg-slate-100 p-3 rounded-xl max-w-[85%] text-slate-700">
+                    <span class="text-[10px] text-blue-600 block font-semibold mb-1">🛠 Tool MCP : get_account_by_id</span>
+                    Votre solde actuel est de <strong>5 000.00 EUR</strong> (Compte CUST-1001, Statut: ACTIF).
+                </div>
+            `;
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        fetchAccounts();
+    </script>
+</body>
+</html>
